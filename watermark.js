@@ -9,12 +9,12 @@ var Watermark = function () {
   var _windowsHeight = window.outerHeight;
 
   /**
-   * create DOM of watermark's container 
+   * Create DOM of watermark's container 
    * @param {Watermark} watermark
    */
   var _createContainer = function (watermark) {
     watermark._container = document.createElement('div');
-    $(watermark._container).appendTo(watermark.options.appendTo || '.cell-main-container')
+    $(watermark._container).appendTo(watermark.options.appendTo || document.querySelector('.cell-main-container') || 'body')
             .addClass('cell-watermark-container')
             .css({
               'display': 'block',
@@ -24,20 +24,19 @@ var Watermark = function () {
   };
 
   /**
-   * create watermark's DOM
+   * Create watermark's Dom
    * @param {Watermark} watermark
    * @param {Object} options
    */
   var _createWatermark = function (watermark, options) {
-    options.rowSpaceing = options.rowSpaceing || 50;
-    options.colSpaceing = options.colSpaceing || 30;
+    options.rowSpacing = options.rowSpacing || 60;
+    options.colSpacing = options.colSpacing || 30;
     options.width = options.width || 150;
     options.height = options.height || 20;
-    let navbarHeight = $('.cell-navbar').outerHeight() || 0;
-    let rows = parseInt((_windowsHeight - navbarHeight) / (options.height + options.rowSpaceing));
-    let cols = parseInt(_windowsWidth / (options.width + options.colSpaceing));
-    let offsetLeft = (_windowsWidth - options.width * cols - options.colSpaceing * (cols - 1)) / 2;
-    let offsetTop = navbarHeight / 2 + (_windowsHeight - options.height * rows - options.rowSpaceing * (rows - 1)) / 2;
+    let rows = parseInt((_windowsHeight) / (options.height + options.rowSpacing));
+    let cols = parseInt(_windowsWidth / (options.width + options.colSpacing));
+    let offsetLeft = (_windowsWidth - options.width * cols - options.colSpacing * (cols - 1)) / 2;
+    let offsetTop = (_windowsHeight - options.height * rows - options.rowSpacing * (rows - 1)) / 2;
     let $watermark = $(document.createElement('div'))
             .addClass('cell-watermark')
             .css({
@@ -52,9 +51,12 @@ var Watermark = function () {
               'z-index': 999999
             });
     for (let row = 0; row < rows; row++) {
-      let top = offsetTop + (options.rowSpaceing + options.height) * row;
-      for (let col = 0; col < cols; col++) {
-        let left = offsetLeft + (options.colSpaceing + options.width) * col;
+      let top = offsetTop + (options.rowSpacing + options.height) * row;
+      let tempCols = cols;
+      row % 2 !== 0 && tempCols++;
+      for (let col = 0; col < tempCols; col++) {
+        let left = offsetLeft + (options.colSpacing + options.width) * col;
+        tempCols !== cols && (left -= (options.colSpacing + options.width) / 2);
         $watermark.clone().appendTo(watermark._container)
                 .addClass('cell-watermark')
                 .css({
@@ -74,7 +76,7 @@ var Watermark = function () {
   };
 
   /**
-   * Re render watermark
+   * Rerender watermark
    * @param {Watermark} watermark
    * @param {Object} options
    */
@@ -95,7 +97,7 @@ var Watermark = function () {
    * @param {Watermark} watermark
    */
   var _addObserve = function (watermark) {
-    //observe watermark element and its child element
+    //Observe watermark element and its child element
     _wmObserver = new MutationObserver(function (mutations, observer) {
       _render(watermark, watermark.options);
     });
@@ -105,12 +107,12 @@ var Watermark = function () {
       characterData: true,
       subtree: true
     });
-    //observe parent element, recreate if the element is deleted
+    //Observe parent element, recreate if the element is deleted
     _wmParentObserver = new MutationObserver(function (mutations) {
       for (let m of mutations) {
         if (m.type === 'childList' && m.removedNodes.length > 0
                 && $('.cell-watermark-container').length === 0) {
-          $(_wmContainer).appendTo(watermark.options.appendTo || '.cell-main-container');
+          $(_wmContainer).appendTo(watermark.options.appendTo || document.querySelector('.cell-main-container') || 'body');
         }
       }
     });
@@ -121,7 +123,7 @@ var Watermark = function () {
   };
 
   /**
-   * windows resize listener
+   * Window's resize listener
    * @param {Watermark} watermark
    */
   var _addResizeListener = function (watermark) {
@@ -136,14 +138,14 @@ var Watermark = function () {
 
   /**
    * Watermark.
-   * create watermark for webpage and automatic adjust when windows resie.
+   * Create watermark for webpage and automatic adjust when windows resize.
    * @param {Object} options
    * @param {String} [options.content] watermark's text
    * @param {String|Element} [options.appendTo || '.cell-main-container] parent of watermark's container 
    * @param {Number} [options.width=150] watermark's width. unit: px
    * @param {Number} [options.height=20] watermark's height. unit: px
-   * @param {Number} [options.RowSpaceing=50] row spaceing of watermarks. unit: px
-   * @param {Number} [options.colSpaceing=30] col spaceing of watermarks. unit: px
+   * @param {Number} [options.rowSpacing=60] row spacing of watermarks. unit: px
+   * @param {Number} [options.colSpacing=30] col spacing of watermarks. unit: px
    * @param {Number} [options.rotate=15] watermark's tangent angle. unit: deg
    * @param {Number} [options.opacity=0.1] watermark's transparency
    * @param {Number} [options.fontSize=0.85] watermark's fontSize. unit: rem
@@ -161,7 +163,7 @@ var Watermark = function () {
     _addResizeListener(this);
 
     /**
-     * upload watermark's text content
+     * Upload watermark's text content
      * @param {String} content watermark's text
      */
     _proto.upload = function (content) {
@@ -183,11 +185,10 @@ var Watermark = function () {
         characterData: true,
         subtree: true
       });
-
     };
 
     /**
-     * Re render watermark
+     * Rerender watermark
      * @param {Object} options
      */
     _proto.render = function (options = {}){

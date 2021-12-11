@@ -1,30 +1,29 @@
 /* global Watermark */
 
-var Watermark = function () {
-
+var Watermark = (function () {
+  var _parentEle;
   var _wmContainer;
   var _wmObserver;
   var _wmParentObserver;
+  var _resizeHandler;
   var _windowsWidth = window.outerWidth;
   var _windowsHeight = window.outerHeight;
 
   /**
-   * Create DOM of watermark's container 
+   * Create DOM of watermark's container
    * @param {Watermark} watermark
    */
   var _createContainer = function (watermark) {
     watermark._container = document.createElement('div');
-    $(watermark._container).appendTo(watermark.options.appendTo || document.querySelector('.cell-main-container') || 'body')
-            .addClass('cell-watermark-container')
-            .css({
-              'display': 'block',
-              'pointer-events': 'none'
-            })
-            .attr('aria-hidden', true);
+    watermark._container.classList.add('cell-watermark-container');
+    watermark._container.style.cssText = 'display: block; pointer-events: none;';
+    watermark._container.setAttribute('aria-hidden', true);
+    _parentEle = document.querySelector(watermark.options.appendTo) || document.body;
+    _parentEle.appendChild(watermark._container);
   };
 
   /**
-   * Create watermark's Dom
+   * Create watermark's DOM
    * @param {Watermark} watermark
    * @param {Object} options
    */
@@ -33,23 +32,15 @@ var Watermark = function () {
     options.colSpacing = options.colSpacing || 30;
     options.width = options.width || 150;
     options.height = options.height || 20;
-    let rows = parseInt((_windowsHeight) / (options.height + options.rowSpacing));
+    let rows = parseInt(_windowsHeight / (options.height + options.rowSpacing));
     let cols = parseInt(_windowsWidth / (options.width + options.colSpacing));
     let offsetLeft = (_windowsWidth - options.width * cols - options.colSpacing * (cols - 1)) / 2;
     let offsetTop = (_windowsHeight - options.height * rows - options.rowSpacing * (rows - 1)) / 2;
-    let $watermark = $(document.createElement('div'))
-            .addClass('cell-watermark')
-            .css({
-              'transform': 'rotate(15deg)',
-              'opacity': '0.1',
-              'font-size': '0.85rem',
-              'text-align': 'center',
-              'position': 'fixed',
-              'user-select': 'none',
-              'word-break': 'break-all',
-              'overflow': 'hidden',
-              'z-index': 999999
-            });
+    let watermarkBase = document.createElement('div');
+    watermarkBase.classList.add('cell-watermark');
+    watermarkBase.style.cssText =
+      'transform: rotate(15deg); opacity: 0.1; font-size: 0.85rem; text-align: center;' +
+      'position: fixed; user-select: none; word-break: break-all; overflow: hidden; z-index: 999999;';
     for (let row = 0; row < rows; row++) {
       let top = offsetTop + (options.rowSpacing + options.height) * row;
       let tempCols = cols;
@@ -57,18 +48,13 @@ var Watermark = function () {
       for (let col = 0; col < tempCols; col++) {
         let left = offsetLeft + (options.colSpacing + options.width) * col;
         tempCols !== cols && (left -= (options.colSpacing + options.width) / 2);
-        $watermark.clone().appendTo(watermark._container)
-                .addClass('cell-watermark')
-                .css({
-                  'left': `${left}px`,
-                  'top': `${top}px`,
-                  'width': `${options.width}px`,
-                  'height': `${options.height}px`,
-                  'transform': `rotate(${options.rotate}deg)`,
-                  'opacity': `${options.opacity}`,
-                  'font-size': `${options.fontSize}rem`
-                })
-                .html(options.content);
+        let watermarkEle = watermarkBase.cloneNode();
+        watermarkEle.style.cssText += `left: ${left}px; top: ${top}px; width: ${options.width}px; height: ${options.height}px`;
+        watermarkEle.style.transform = `rotate(${options.rotate}deg)`;
+        watermarkEle.style.opacity = options.opacity;
+        watermarkEle.style.fontSize = `${options.fontSize}rem`;
+        watermarkEle.innerHTML = options.content;
+        watermark._container.appendChild(watermarkEle);
       }
     }
     //Backup for recover the watermark's container when the its DOM is removed
@@ -82,7 +68,7 @@ var Watermark = function () {
    */
   var _render = function (watermark, options) {
     _wmObserver.disconnect();
-    $(watermark._container).empty();
+    watermark._container.innerHTML = '';
     _createWatermark(watermark, options);
     _wmObserver.observe(watermark._container, {
       attributes: true,
@@ -110,9 +96,12 @@ var Watermark = function () {
     //Observe parent element, recreate if the element is deleted
     _wmParentObserver = new MutationObserver(function (mutations) {
       for (let m of mutations) {
-        if (m.type === 'childList' && m.removedNodes.length > 0
-                && $('.cell-watermark-container').length === 0) {
-          $(_wmContainer).appendTo(watermark.options.appendTo || document.querySelector('.cell-main-container') || 'body');
+        if (
+          m.type === 'childList' &&
+          m.removedNodes.length > 0 &&
+          document.querySelectorAll('.cell-watermark-container').length === 0
+        ) {
+          _parentEle.appendChild(_wmContainer);
         }
       }
     });
@@ -127,13 +116,14 @@ var Watermark = function () {
    * @param {Watermark} watermark
    */
   var _addResizeListener = function (watermark) {
-    $(window).on('resize', function () {
+    _resizeHandler = function () {
       if (window.outerHeight !== _windowsHeight || window.outerWidth !== _windowsWidth) {
         _windowsHeight = window.outerHeight;
         _windowsWidth = window.outerWidth;
         _render(watermark, watermark.options);
       }
-    });
+    };
+    window.addEventListener('resize', _resizeHandler);
   };
 
   /**
@@ -141,7 +131,7 @@ var Watermark = function () {
    * Create watermark for webpage and automatic adjust when windows resize.
    * @param {Object} options
    * @param {String} [options.content] watermark's text
-   * @param {String|Element} [options.appendTo || '.cell-main-container] parent of watermark's container 
+   * @param {String} [options.appendTo='body'] parent of watermark's container
    * @param {Number} [options.width=150] watermark's width. unit: px
    * @param {Number} [options.height=20] watermark's height. unit: px
    * @param {Number} [options.rowSpacing=60] row spacing of watermarks. unit: px
@@ -151,8 +141,8 @@ var Watermark = function () {
    * @param {Number} [options.fontSize=0.85] watermark's fontSize. unit: rem
    * @namespace Watermark
    * @class Watermark
-   * @since 1.0.0
-   * @author Lruihao
+   * @version 1.0.2
+   * @author @Lruihao https://lruihao.cn
    */
   function Watermark(options = {}) {
     var _proto = Watermark.prototype;
@@ -173,8 +163,9 @@ var Watermark = function () {
       _wmParentObserver.disconnect();
       _wmObserver.disconnect();
       this.options.content = content;
-      $(this._container).find('.cell-watermark')
-              .html(content);
+      for (const watermark of this._container.querySelectorAll('.cell-watermark')) {
+        watermark.innerHTML = content;
+      }
       _wmParentObserver.observe(this._container.parentNode, {
         childList: true,
         subtree: true
@@ -191,7 +182,7 @@ var Watermark = function () {
      * Rerender watermark
      * @param {Object} options
      */
-    _proto.render = function (options = {}){
+    _proto.render = function (options = {}) {
       _render(this, Object.assign(this.options, options));
     };
 
@@ -201,9 +192,9 @@ var Watermark = function () {
     _proto.destroy = function () {
       _wmObserver.disconnect();
       _wmParentObserver.disconnect();
-      $(window).off('resize');
-      $(this._container).remove();
+      window.removeEventListener('resize', _resizeHandler);
+      this._container.parentNode.removeChild(this._container);
     };
   }
   return Watermark;
-}();
+})();

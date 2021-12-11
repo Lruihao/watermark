@@ -7,24 +7,23 @@
 
 | Name    | Type   | Description                       |
 | ------- | ------ | --------------------------------- |
-| options | Object | 選項（[Properties](#properties)） |
+| options | Object | The options of watermark（[Properties](#properties)） |
 
 ###### Properties:
 
 | Name       | Type   | Attributes | Default | Description                          |
 | ---------- | ------ | ---------- | :------ | ------------------------------------ |
-| content    | String | \<optional\> |         | watermark's text                     |
-| width      | Number | \<optional\> | 150     | watermark's width. unit: px          |
-| height     | Number | \<optional\> | 20      | watermark's height. unit: px         |
-| rowSpacing | Number | \<optional\> | 60      | row spacing of watermarks. unit: px  |
-| colSpacing | Number | \<optional\> | 30      | col spacing of watermarks. unit: px  |
-| rotate     | Number | \<optional\> | 15      | watermark's tangent angle. unit: deg |
-| opacity    | Number | \<optional\> | 0.1     | watermark's transparency             |
-| fontSize   | Number | \<optional\> | 0.85    | watermark's fontSize. unit: rem      |
+| content    | String | \<optional\> |        | watermark's text                     |
+| appendTo   | String | \<optional\> | 'body' | parent of watermark's container      |
+| width      | Number | \<optional\> | 150    | watermark's width. unit: px          |
+| height     | Number | \<optional\> | 20     | watermark's height. unit: px         |
+| rowSpacing | Number | \<optional\> | 60     | row spacing of watermarks. unit: px  |
+| colSpacing | Number | \<optional\> | 30     | col spacing of watermarks. unit: px  |
+| rotate     | Number | \<optional\> | 15     | watermark's tangent angle. unit: deg |
+| opacity    | Number | \<optional\> | 0.1    | watermark's transparency             |
+| fontSize   | Number | \<optional\> | 0.85   | watermark's fontSize. unit: rem      |
 
-
-> Version: 1.0.1
-> Author: Lruihao
+> Author: [Lruihao](https://lruihao.cn)
 
 ### Methods
 
@@ -44,20 +43,7 @@ Rerender watermark
 
 | Name    | Type   | Description                         |
 | ------- | ------ | ----------------------------------- |
-| options | Object | 選項（[Properties](#properties-1)） |
-
-###### Properties:
-
-| Name       | Type   | Attributes | Default | Description                          |
-| ---------- | ------ | ---------- | :------ | ------------------------------------ |
-| content    | String | \<optional\> |         | watermark's text                     |
-| width      | Number | \<optional\> | 150     | watermark's width. unit: px          |
-| height     | Number | \<optional\> | 20      | watermark's height. unit: px         |
-| rowSpacing | Number | \<optional\> | 60      | row spacing of watermarks. unit: px  |
-| colSpacing | Number | \<optional\> | 30      | col spacing of watermarks. unit: px  |
-| rotate     | Number | \<optional\> | 15      | watermark's tangent angle. unit: deg |
-| opacity    | Number | \<optional\> | 0.1     | watermark's transparency             |
-| fontSize   | Number | \<optional\> | 0.85    | watermark's fontSize. unit: rem      |
+| options | Object | The options of watermark（[Properties](#properties)） |
 
 #### destroy()
 

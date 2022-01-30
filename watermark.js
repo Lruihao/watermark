@@ -53,6 +53,7 @@ var Watermark = (function () {
         watermarkEle.style.transform = `rotate(${options.rotate}deg)`;
         watermarkEle.style.opacity = options.opacity;
         watermarkEle.style.fontSize = `${options.fontSize}rem`;
+        watermarkEle.style.fontFamily = options.fontFamily;
         watermarkEle.innerHTML = options.content;
         watermark._container.appendChild(watermarkEle);
       }
@@ -139,9 +140,10 @@ var Watermark = (function () {
    * @param {Number} [options.rotate=15] watermark's tangent angle. unit: deg
    * @param {Number} [options.opacity=0.1] watermark's transparency
    * @param {Number} [options.fontSize=0.85] watermark's fontSize. unit: rem
+   * @param {Number} [options.fontFamily='inherit'] watermark's fontFamily.
    * @namespace Watermark
    * @class Watermark
-   * @version 1.0.2
+   * @version 1.0.3
    * @author @Lruihao https://lruihao.cn
    */
   function Watermark(options = {}) {

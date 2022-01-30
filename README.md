@@ -11,8 +11,8 @@
 
 ###### Properties:
 
-| Name       | Type   | Attributes | Default | Description                          |
-| ---------- | ------ | ---------- | :------ | ------------------------------------ |
+| Name       | Type   | Attributes | Default  | Description                          |
+| ---------- | ------ | ---------- | :------- | ------------------------------------ |
 | content    | String | \<optional\> |        | watermark's text                     |
 | appendTo   | String | \<optional\> | 'body' | parent of watermark's container      |
 | width      | Number | \<optional\> | 150    | watermark's width. unit: px          |
@@ -22,6 +22,7 @@
 | rotate     | Number | \<optional\> | 15     | watermark's tangent angle. unit: deg |
 | opacity    | Number | \<optional\> | 0.1    | watermark's transparency             |
 | fontSize   | Number | \<optional\> | 0.85   | watermark's fontSize. unit: rem      |
+| fontFamily | String | \<optional\> | 'inherit'| watermark's fontFamily.            |
 
 > Author: [Lruihao](https://lruihao.cn)
 

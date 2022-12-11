@@ -2,7 +2,7 @@
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define([], factory());
+    define([], () => factory());
   } else if (typeof module === 'object' && module.exports) {
     module.exports = factory();
   } else {
@@ -66,7 +66,7 @@
         watermark._container.appendChild(watermarkEle);
       }
     }
-    //Backup for recover the watermark's container when the its DOM is removed
+    // Backup for recover the watermark's container when the its DOM is removed
     _wmContainer = watermark._container;
   };
 
@@ -92,7 +92,7 @@
    * @param {Watermark} watermark
    */
   var _addObserve = function (watermark) {
-    //Observe watermark element and its child element
+    // Observe watermark element and its child element
     _wmObserver = new MutationObserver(function (mutations, observer) {
       _render(watermark, watermark.options);
     });
@@ -102,7 +102,7 @@
       characterData: true,
       subtree: true
     });
-    //Observe parent element, recreate if the element is deleted
+    // Observe parent element, recreate if the element is deleted
     _wmParentObserver = new MutationObserver(function (mutations) {
       for (let m of mutations) {
         if (
@@ -136,8 +136,9 @@
   };
 
   /**
-   * Watermark.
-   * Create watermark for webpage and automatic adjust when windows resize.
+   * Constructor of Watermark
+   * @class Watermark
+   * @classdesc Create watermark for webpage and automatic adjust when windows resize.
    * @param {Object} options
    * @param {String} [options.content] watermark's text
    * @param {String} [options.appendTo='body'] parent of watermark's container
@@ -149,10 +150,8 @@
    * @param {Number} [options.opacity=0.1] watermark's transparency
    * @param {Number} [options.fontSize=0.85] watermark's fontSize. unit: rem
    * @param {Number} [options.fontFamily='inherit'] watermark's fontFamily.
-   * @namespace Watermark
-   * @class Watermark
-   * @version 1.0.3
-   * @author @Lruihao https://lruihao.cn
+   * @version 1.0.4
+   * @author Lruihao
    */
   function Watermark(options = {}) {
     var _proto = Watermark.prototype;
@@ -165,6 +164,9 @@
     /**
      * Upload watermark's text content
      * @param {String} content watermark's text
+     * @name Watermark#upload
+     * @function
+     * @since 1.0.0
      */
     _proto.upload = function (content) {
       if (!content) {
@@ -190,7 +192,10 @@
 
     /**
      * Rerender watermark
-     * @param {Object} options
+     * @param {Object} options see {@link Watermark|Constructor}
+     * @name Watermark#render
+     * @function
+     * @since 1.0.0
      */
     _proto.render = function (options = {}) {
       _render(this, Object.assign(this.options, options));
@@ -198,6 +203,9 @@
 
     /**
      * Force destroy watermark
+     * @name Watermark#destroy
+     * @function
+     * @since 1.0.0
      */
     _proto.destroy = function () {
       _wmObserver.disconnect();

@@ -1,10 +1,10 @@
 {
   "name": "cell-watermark",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Create watermark for webpage and automatic adjust when window resize",
   "main": "src/watermark.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docs": "jsdoc src/watermark.js -d docs/html && jsdoc2md src/watermark.js > docs/README.md"
   },
   "repository": {
     "type": "git",
@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/Lruihao/watermark/issues"
   },
-  "homepage": "https://github.com/Lruihao/watermark#readme"
+  "homepage": "https://github.com/Lruihao/watermark#readme",
+  "devDependencies": {
+    "jsdoc": "^4.0.0",
+    "jsdoc-to-markdown": "^8.0.0"
+  }
 }
